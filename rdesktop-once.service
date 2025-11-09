@@ -1,0 +1,26 @@
+[Unit]
+Description=Run rdesktop once on a dummy display
+After=network-online.target
+After=xrdp.service
+Wants=network-online.target
+
+[Service]
+# rdesktop wants to store accepted certificate in $HOME
+PrivateTmp=true
+Environment="HOME=/tmp"
+
+# Credentials must be manually set with this:
+#   systemd-creds encrypt --name=RDP_USER - /etc/credstore.encrypted/run-rdesktop-once-user.cred
+#   user1
+#
+#   systemd-creds encrypt --name=RDP_PASS - /etc/credstore.encrypted/run-rdesktop-once-pass.cred
+#   s3cret
+LoadCredentialEncrypted=RDP_USER:run-rdesktop-once-user.cred
+LoadCredentialEncrypted=RDP_PASS:run-rdesktop-once-pass.cred
+PassEnvironment=HOME
+User=nobody
+Type=oneshot
+ExecStart=/usr/local/bin/run-rdesktop-once.sh
+
+[Install]
+WantedBy=multi-user.target
