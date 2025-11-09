@@ -16,7 +16,7 @@
 #         --cap-add SYS_PTRACE \
 #         --cap-add SYS_ADMIN --security-opt seccomp=unconfined \
 #         my-router-ubuntu-xfce4-pre \
-#         -c "exec /lib/systemd/systemd log-level=info unit=sysinit.target"
+#         -c "mount --make-rshared / && exec /lib/systemd/systemd log-level=info unit=sysinit.target"
 #
 # Optionally prepend /lib/systemd/systemd with: /usr/bin/strace -f --daemonize
 # You can also prefix the whole command with: umount /dev/shm && 
@@ -75,9 +75,18 @@ RUN \
   --mount=type=tmpfs,target=/run/lock \
   --mount=type=cache,target=/var/cache/apt/archives,sharing=locked,id=my-router-ubuntu-xfce4-var-cache-apt-archives \
   --mount=type=cache,target=/var/lib/apt/lists,sharing=locked,id=my-router-ubuntu-xfce4-var-lib-apt-lists \
-  apt-get install -y --no-install-recommends xrdp xorgxrdp xvfb && \
+  apt-get install -y --no-install-recommends xrdp xorgxrdp && \
   echo "fixing /etc/xrdp/key.pem: Permission denied" && \
   adduser xrdp ssl-cert
+
+# install rdesktop and fake X server to run it headless
+RUN \
+  --mount=type=tmpfs,target=/tmp \
+  --mount=type=tmpfs,target=/run \
+  --mount=type=tmpfs,target=/run/lock \
+  --mount=type=cache,target=/var/cache/apt/archives,sharing=locked,id=my-router-ubuntu-xfce4-var-cache-apt-archives \
+  --mount=type=cache,target=/var/lib/apt/lists,sharing=locked,id=my-router-ubuntu-xfce4-var-lib-apt-lists \
+  apt-get install -y --no-install-recommends xvfb rdesktop
 
 # troubleshooting tools
 RUN \
