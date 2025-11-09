@@ -57,7 +57,7 @@ RUN \
   --mount=type=tmpfs,target=/run/lock \
   --mount=type=cache,target=/var/cache/apt/archives,sharing=locked,id=my-router-ubuntu-xfce4-var-cache-apt-archives \
   --mount=type=cache,target=/var/lib/apt/lists,sharing=locked,id=my-router-ubuntu-xfce4-var-lib-apt-lists \
-  apt-get install -y --no-install-recommends sudo iproute2 iputils-ping dnsutils winpr-utils xz-utils curl ca-certificates
+  apt-get install -y --no-install-recommends sudo iproute2 iptables iputils-ping dnsutils winpr-utils xz-utils curl ca-certificates
 
 # install XFCE4 desktop environment
 RUN \
@@ -66,7 +66,7 @@ RUN \
   --mount=type=tmpfs,target=/run/lock \
   --mount=type=cache,target=/var/cache/apt/archives,sharing=locked,id=my-router-ubuntu-xfce4-var-cache-apt-archives \
   --mount=type=cache,target=/var/lib/apt/lists,sharing=locked,id=my-router-ubuntu-xfce4-var-lib-apt-lists \
-  apt-get install -y --no-install-recommends xfce4 xfce4-notifyd xfce4-terminal x11-utils
+  apt-get install -y --no-install-recommends xfce4 xfce4-notifyd xfce4-terminal x11-utils netfilter-persistent
 
 # install xrdp for remote desktop access
 RUN \
@@ -106,3 +106,19 @@ RUN \
   --mount=type=cache,target=/var/lib/apt/lists,sharing=locked,id=my-router-ubuntu-xfce4-var-lib-apt-lists \
   --mount=type=bind,target=/var/tmp/my-router-ubuntu-xfce4-install \
   [ "/bin/bash", "/var/tmp/my-router-ubuntu-xfce4-install/systemd-setup.sh" ]
+
+# install Firefox in /opt (not the containerized Firefox)
+RUN \
+  --mount=type=tmpfs,target=/tmp \
+  --mount=type=tmpfs,target=/run \
+  --mount=type=tmpfs,target=/run/lock \
+  --mount=type=cache,target=/var/cache/apt/archives,sharing=locked,id=my-router-ubuntu-xfce4-var-cache-apt-archives \
+  --mount=type=cache,target=/var/lib/apt/lists,sharing=locked,id=my-router-ubuntu-xfce4-var-lib-apt-lists \
+  --mount=type=bind,target=/var/tmp/my-router-ubuntu-xfce4-install \
+  --mount=type=cache,target=/var/cache/my-downloads,sharing=locked,id=my-downloads \
+  cd /var/cache/my-downloads && \
+  curl -f -O --remote-time --time-cond "./firefox-143.0.4.tar.xz" "https://download-installer.cdn.mozilla.net/pub/firefox/releases/143.0.4/linux-x86_64/en-US/firefox-143.0.4.tar.xz" && \
+  cd /opt && \
+  tar -xf /var/cache/my-downloads/firefox-143.0.4.tar.xz && \
+  install -Dm644 /var/tmp/my-router-ubuntu-xfce4-install/opt-firefox.desktop /usr/share/applications/opt-firefox.desktop && \
+  update-desktop-database

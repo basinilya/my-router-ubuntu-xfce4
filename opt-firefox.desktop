@@ -1,0 +1,11 @@
+[Desktop Entry]
+Version=1.0
+Name=Firefox Web Browser (/opt)
+Comment=Browse the Web
+Exec=/opt/firefox/firefox %u
+Icon=/opt/firefox/browser/chrome/icons/default/default128.png
+Terminal=false
+Type=Application
+Categories=Network;WebBrowser;
+MimeType=text/html;text/xml;application/xhtml+xml;x-scheme-handler/http;x-scheme-handler/https;x-scheme-handler/ftp;
+StartupWMClass=firefox
