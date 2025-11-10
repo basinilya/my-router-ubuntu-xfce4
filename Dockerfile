@@ -121,4 +121,5 @@ RUN \
   cd /opt && \
   tar -xf /var/cache/my-downloads/firefox-143.0.4.tar.xz && \
   install -Dm644 /var/tmp/my-router-ubuntu-xfce4-install/opt-firefox.desktop /usr/share/applications/opt-firefox.desktop && \
-  update-desktop-database
+  update-desktop-database && \
+  printf '\nexport BROWSER=/opt/firefox/firefox\n' | sudo -u user1 sh -c 'cat >>~/.xsessionrc'
